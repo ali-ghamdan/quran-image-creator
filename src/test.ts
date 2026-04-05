@@ -1,16 +1,16 @@
 import fs from "node:fs";
 import QuranImageCreator from ".";
 
+console.time();
 QuranImageCreator({
-  selection: [
-    { chapter: 2, from: 255, to: 255, exegesis: "السعدي" },
-    { chapter: 2, from: 285, to: 286 },
-    { chapter: 112, from: 1, to: 4 },
-    { chapter: 113, from: 1, to: 5 },
-    { chapter: 114, from: 1, to: 6 },
-  ],
+  selection: [{ chapter: 1, from: 1, to: 7 }],
   layout: "madinah-1422",
-  centerVerses: true,
+  loadPageNumber: {
+    pagesEnd: true,
+    sectionsEnd: true,
+  },
 }).then((image) => {
+  console.timeLog();
   fs.writeFileSync("./test.jpeg", image);
+  console.timeEnd();
 });

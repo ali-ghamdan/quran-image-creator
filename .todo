@@ -1,0 +1,17 @@
+[] add juz+rub if the verse come
+[] add section highlighting (التفصيل الموضوعي)
+[] add horizontal fill instead of vertical (no/listen for lines if ignoreWordPosition toggled)
+[] add tajweed for dark mode.
+[] use english numbers instead of arabic
+[] styling the verses numbers
+[] split line into parts for better display and support the section highlighting
+[] multiple fonts for each recitation if possible
+[] hafs differences with other recitations
+[] work on madinah-1441 font database from (https://almushaf.app/)
+[] enable multi exegesis's for one selection
+[] warsh basmalah
+[] date capture option
+[] default options for each recitation
+[] tajweed hints in the page 1+2
+[] fix madinah-1439 font displaying issue
+[] make the exegesis direction as the language direction.

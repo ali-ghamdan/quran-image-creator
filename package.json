@@ -1,19 +1,50 @@
 {
   "name": "quran-image-creator",
   "version": "1.0.0",
-  "description": "",
-  "main": "src/index.ts",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "description": "Generate Quran verse images with various Madinah Mushaf layouts and recitations",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "import": "./dist/index.js"
+    }
   },
-  "keywords": [],
-  "author": "",
+  "scripts": {
+    "build": "tsc",
+    "test": "node dist/test.js"
+  },
+  "keywords": [
+    "quran",
+    "quran-images",
+    "quran-generator",
+    "madinah-mushaf",
+    "islamic",
+    "quran-verses",
+    "arabic",
+    "quran-api",
+    "hafs",
+    "warsh",
+    "qalon",
+    "image-generator"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ali-ghamdan/quran-image-creator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ali-ghamdan/quran-image-creator/issues"
+  },
+  "homepage": "https://github.com/ali-ghamdan/quran-image-creator#readme",
+  "author": "ali-ghamdan",
   "license": "ISC",
   "packageManager": "pnpm@10.33.0",
   "dependencies": {
     "@napi-rs/canvas": "^0.1.97"
   },
   "devDependencies": {
-    "@types/node": "^25.5.0"
+    "@types/node": "^25.5.2",
+    "typescript": "^5.0.0"
   }
 }

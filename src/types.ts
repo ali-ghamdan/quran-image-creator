@@ -26,27 +26,41 @@ export type Layouts =
   | "madinah-1405"
   | "madinah-1422"
   | "madinah-1439"
+  | "madinah-1439-digital"
+  // | "madinah-1441"
+  | "madinah-tajweed"
   | "warsh"
   | "qalon"
   | "sosi"
   | "doori"
   | "shobah";
 
-export type QuranImageCreatorType = {
-  layout?: Layouts;
+export type QuranImageCreatorOptions = {
   selection: VerseSelectionType[];
+  readonly height?: number;
+  layout?: Layouts;
+  centerVerses?: boolean; // default false
+  ignoreWordsPosition?: boolean; // default false
+  loadPageNumber?: {
+    pagesEnd?: boolean;
+    sectionsEnd?: boolean;
+  };
   theme?: {
     forgroundColor?: string;
     backgroundColor?: string;
   };
-  centerVerses?: boolean; // default false
-  ignoreWordsPosition?: boolean; // default false
   exegesisFont?: string;
-  height?: number;
   loadExegesis?: {
     [key: string]: (data: {
       chapterId: number;
       verseId: number;
     }) => Promise<{ name: string; content: string }>;
   };
+  customVerseFrameBox?: boolean;
+  loadVersesFont?: (pageId: number, layout: Layouts) => Promise<Buffer | void>;
 };
+
+export interface linePartType {
+  data: string;
+  type: "words" | "verse_number";
+}

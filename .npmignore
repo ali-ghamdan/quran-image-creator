@@ -1,0 +1,14 @@
+# Build source
+src/**/*.ts
+
+# Development
+.git
+.github
+.vscode
+.qwen
+
+# Git
+.gitignore
+
+# Package manager
+pnpm-lock.yaml
