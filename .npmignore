@@ -6,9 +6,12 @@ src/**/*.ts
 .github
 .vscode
 .qwen
-
 # Git
 .gitignore
 
 # Package manager
 pnpm-lock.yaml
+
+# samples
+examples
+assets/samples/

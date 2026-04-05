@@ -2,6 +2,16 @@
 
 Generate high-quality images of Quran verses automatically. Supports multiple Madinah Mushaf layouts, recitations, custom themes, page numbers, and exegesis (tafsīr).
 
+## 📸 Samples
+
+These are an examples for the available layouts tested on `Al-Fatihah` Chapter, the code file is under `examples/layouts.js`
+
+|                                                                                                      |                                                                                             |                                                                                             |
+| :--------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------: |
+|     <img width="1604" alt="madinah-1405" src="./assets/samples/madinah-1405.jpeg"> madinah-1405      | <img width="1604" alt="madinah-1422" src="./assets/samples/madinah-1422.jpeg"> madinah-1422 | <img width="1604" alt="madinah-1439" src="./assets/samples/madinah-1439.jpeg"> madinah-1439 |
+| <img width="1604" alt="madinah-tajweed" src="./assets/samples/madinah-tajweed.jpeg"> madinah-tajweed |           <img width="1604" alt="warsh" src="./assets/samples/warsh.jpeg"> warsh            |           <img width="1604" alt="qalon" src="./assets/samples/qalon.jpeg"> qalon            |
+|                <img width="1604" alt="doori" src="./assets/samples/doori.jpeg"> doori                |             <img width="1604" alt="sosi" src="./assets/samples/sosi.jpeg"> sosi             |          <img width="1604" alt="shobah" src="./assets/samples/shobah.jpeg"> shobah          |
+
 ## ✨ Features
 
 - **Multiple Layouts**: Madinah 1405, 1422, 1439, Tajweed, Warsh, Qalon, Sūsi, Dūrī, and Shuʿbah.
