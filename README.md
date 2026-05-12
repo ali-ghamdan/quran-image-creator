@@ -79,7 +79,7 @@ const QuranImageCreator = require("quran-image-creator");
 ### المتصفح
 
 ```js
-import QuranImageCreator from "quran-image-creator";
+import QuranImageCreator from "quran-image-creator/esm";
 
 const canvas = document.querySelector("canvas");
 canvas.width = 1024;
