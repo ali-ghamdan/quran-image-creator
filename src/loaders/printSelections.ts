@@ -1,91 +1,72 @@
-import { loadImage, SKRSContext2D } from "@napi-rs/canvas";
 import type { QuranImageCreatorOptions, WordSelectionType } from "../types";
 import printChapterHeader from "./chapterHeader";
-import {
-  chaptersWithoutBeginning,
-  pageFrameBox,
-  splitLines,
-  toArabicNumbers,
-  wrapString,
-} from "../utils";
 import { printPageNumber } from "./pageNumber";
 import loadSectionFonts from "./selectionFonts";
 import printVerseLine from "./printVerseLine";
+import { pageFrameBox } from "../utils/pageFrameBox";
+import { splitLines } from "../utils/splitLines";
+import { nonBasmalaChapters } from "../utils/nonBasmalaChapters";
+import { toArabicNumbers } from "../utils/toArabicNumbers";
+import { wrapString } from "../utils/wrapString";
+import { BaseCanvas } from "../platforms/baseImplements";
+import { printBasmalah } from "./printBasmalah";
 
 export default async function printSelections(
-  ctx: SKRSContext2D,
+  canvas: BaseCanvas,
   options: QuranImageCreatorOptions,
   Words: Array<WordSelectionType>,
   textColor: string,
 ) {
-  const { canvas } = ctx;
   const layout = options.layout || "madinah-1439";
-
   let currentHeightPosition = 150; // top padding
   for (let i = 0; i < options.selection.length; i++) {
     const selection = Words[i];
     // print chapter head
-
     printChapterHeader(
-      ctx,
+      canvas,
       layout,
       selection.chapter,
       textColor,
-      options.theme!.forgroundColor!,
+      options.theme!.foregroundColor!,
       currentHeightPosition,
     );
     currentHeightPosition += 250;
 
     // print verses
-    ctx.save();
+    canvas.save();
 
-    ctx.fillStyle = textColor;
-    ctx.textAlign = "right";
+    canvas.setFillStyle(textColor);
+    canvas.setTextAlign("right");
 
     // load all required fonts for the process.
     await loadSectionFonts(layout, options, selection);
 
     const lines = splitLines(
-      ctx,
+      canvas,
       selection,
       layout,
       options.ignoreWordsPosition,
     );
-
     for (let l = 0; l < lines.length; l++) {
       const words = lines[l];
 
       const pageId = words[0].pageId;
 
-      // TODO: load a special basmalah if available for the choosen layout (recitation).
       // load "بسم الله الرحمن الرحيم" if was the first verse in the chapter.
       if (
         words[0].verseId == 1 &&
         // to avoid repeating the process.
         words[0].wordId == 1 &&
-        !chaptersWithoutBeginning(layout).includes(words[0].chapterId)
+        !nonBasmalaChapters(layout).includes(words[0].chapterId)
       ) {
-        ctx.save();
-        ctx.font = "185px basmalah";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText("5", canvas.width / 2, currentHeightPosition - 20);
-        ctx.restore();
-
+        printBasmalah(canvas, currentHeightPosition);
         currentHeightPosition += 160;
       }
 
       // print verse line
-      ctx.save();
-      await printVerseLine(
-        ctx,
-        words,
-        options,
-        textColor,
-        currentHeightPosition,
-        l,
-      );
-      ctx.restore();
+      canvas.save();
+      await printVerseLine(canvas, words, options, currentHeightPosition, l);
+      canvas.restore();
       // print page number.
 
       // end of the page (last line always is 15).
@@ -99,8 +80,10 @@ export default async function printSelections(
         currentHeightPosition += 150;
 
         printPageNumber(
-          ctx,
-          await loadImage(pageFrameBox(options.theme!.forgroundColor!)),
+          canvas,
+          await canvas.loadImage(
+            (await pageFrameBox(options.theme!.foregroundColor!)) as any,
+          ),
           pageId,
           textColor,
           currentHeightPosition,
@@ -110,7 +93,7 @@ export default async function printSelections(
       // end of the section (padding between selections).
       currentHeightPosition += 200;
     }
-    ctx.restore();
+    canvas.restore();
     currentHeightPosition -= 40;
 
     // print exegesis.
@@ -120,48 +103,49 @@ export default async function printSelections(
       for (let k = selection.from; k <= selection.to; k++) {
         const exegesisOfVerse = await options.loadExegesis[
           selection.exegesis!
-        ]?.({ chapterId: selection.chapter, verseId: k })?.catch(() => {});
+        ]?.({ chapterId: selection.chapter, verseId: k });
         if (!exegesisOfVerse || !exegesisOfVerse.content) continue;
         exegesisName = exegesisOfVerse.name;
         exegeses += `${toArabicNumbers(k)}. ${exegesisOfVerse.content}\n`;
       }
-
       // process printing exegesis if found.
       if (exegeses.trim()) {
-        ctx.save();
-        ctx.font = `69px '${options.exegesisFont}'`;
-        ctx.direction = "rtl";
-        ctx.textBaseline = "middle";
-        ctx.textAlign = "right";
-        ctx.fillStyle = textColor;
+        canvas.save();
+        canvas.setFont(`69px '${options.exegesisFont}'`);
+        canvas.setDirection("rtl");
+        canvas.setTextBaseLine("middle");
+        canvas.setTextAlign("right");
+        canvas.setFillStyle(textColor);
+
         const endWidth = 80;
         const startWidth = canvas.width - endWidth;
         const maxWidth = startWidth - endWidth;
-        const exegesesLines = wrapString(ctx, exegeses, maxWidth);
+        const exegesesLines = wrapString(canvas, exegeses, maxWidth);
 
-        ctx.save();
-        ctx.font = `85px '${options.exegesisFont}'`;
-        ctx.fillStyle = options.theme!.forgroundColor!;
-        ctx.fillText(
+        canvas.save();
+        canvas.setFont(`85px '${options.exegesisFont}'`);
+        canvas.setFillStyle(options.theme!.foregroundColor!);
+        canvas.fillText(
           exegesisName || "",
           startWidth + 30,
           currentHeightPosition,
           maxWidth,
         );
-        ctx.restore();
+        canvas.restore();
         currentHeightPosition += 30;
         for (let n = 0; n < exegesesLines.length; n++) {
           const exegesisLine = exegesesLines[n];
-          ctx.fillStyle = textColor;
-          ctx.fillText(
+          canvas.setFillStyle(textColor);
+          canvas.fillText(
             exegesisLine,
             canvas.width - 70,
-            (currentHeightPosition += 105),
+            (currentHeightPosition += exegesisLine === "\n" ? 50 : 115),
             maxWidth,
           );
         }
+        currentHeightPosition += 80;
 
-        ctx.restore();
+        canvas.restore();
         currentHeightPosition += 150;
       }
     }

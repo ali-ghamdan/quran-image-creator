@@ -1,3 +1,5 @@
+export const isNode = typeof process === "object";
+
 export const ArabicNumbersRegex = /([٠١٢٣٤٥٦٧٨٩])+/g;
 
 export const NamedChapters = [

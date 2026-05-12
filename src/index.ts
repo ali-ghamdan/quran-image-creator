@@ -1,12 +1,18 @@
-import { createCanvas } from "@napi-rs/canvas";
 import type { QuranImageCreatorOptions } from "./types";
-import { getDefaultOptions, getWords, isColorDark } from "./utils";
 import printSelections from "./loaders/printSelections";
 import loadEssentialFonts from "./loaders/essentialFonts";
+import { createCanvas, pathJoin } from "./platforms";
+import { isColorDark } from "./utils/isColorDark";
+import { getDefaultOptions } from "./utils/getDefaultOptions";
+import { getVersesWords } from "./utils/getVersesWords";
+import { isNode } from "./constants";
 
 export default async function QuranImageCreator(
   creatorOptions: QuranImageCreatorOptions,
-): Promise<Buffer> {
+  mime: "image/png" | "image/jpeg" | "image/webp" | "image/avif",
+  res: "blob" | "buffer" | "base64",
+  canvasEl?: HTMLCanvasElement,
+): Promise<{ width: number; height: number; data: Blob | Buffer | string }> {
   let layout = creatorOptions.layout || "madinah-1439";
 
   if (layout === "madinah-1439-digital") {
@@ -15,16 +21,20 @@ export default async function QuranImageCreator(
   }
 
   const options = Object.assign(getDefaultOptions(layout), creatorOptions);
+  const assetsDirectory = await pathJoin(options.assetsDirectory!);
 
-  if (options.customVerseFrameBox) {
-    console.warn(
-      "This is a very-experimental feature, words may not display correctly, for now its not recommended to use.",
-    );
+  const words = await getVersesWords(
+    layout,
+    options.selection,
+    assetsDirectory,
+  );
+
+  if (!isNode && !canvasEl) {
+    canvasEl = document.createElement("canvas");
   }
 
-  const words = getWords(layout, options.selection);
-  const Height = options.height || 1080;
-  const Width = 1920;
+  const CanvasHeight = options.height || 1080;
+  const CanvasWidth = 1920;
 
   const isDark = isColorDark(options.theme?.backgroundColor!);
   if (layout === "madinah-tajweed" && isDark) {
@@ -35,21 +45,20 @@ export default async function QuranImageCreator(
   }
   const textColor =
     isDark && layout !== "madinah-tajweed" ? "#ffffff" : "#000000";
-  const canvas = createCanvas(Width, Height);
-  const ctx = canvas.getContext("2d");
+  const canvas = await createCanvas(
+    isNode ? CanvasWidth : canvasEl!,
+    CanvasHeight,
+  );
 
   // load essential fonts
-  loadEssentialFonts(layout);
+  await loadEssentialFonts(layout, assetsDirectory);
 
   // default ctx options & print background.
-  ctx.textBaseline = "middle";
-  ctx.direction = "rtl";
-  ctx.lang = "arabic";
-  ctx.fillStyle = options.theme?.backgroundColor!;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  canvas.setFillStyle(options.theme?.backgroundColor!);
+  canvas.fillRect(0, 0, canvas.width, canvas.height);
 
   const currentHeightPosition = await printSelections(
-    ctx,
+    canvas,
     options,
     words,
     textColor,
@@ -61,11 +70,39 @@ export default async function QuranImageCreator(
     (canvas.height - currentHeightPosition > 150 ||
       currentHeightPosition >= canvas.height)
   ) {
-    return await QuranImageCreator({
-      ...options,
-      height: currentHeightPosition - 50,
-    });
-  }
+    const finalCanvasHeight = currentHeightPosition - 50;
+    let canvasElement: HTMLCanvasElement | undefined;
+    if (canvasEl) {
+      const body = document.querySelector("body");
+      if (!body) throw new Error("body element must be exist.");
 
-  return await canvas.toBuffer("image/jpeg", 100);
+      canvasElement = body?.appendChild(canvasEl);
+
+      canvasElement.style.display = "none";
+      canvasElement.style.position = "absolute";
+      canvasElement.width = CanvasWidth;
+      canvasElement.height = finalCanvasHeight;
+    }
+
+    const data = await QuranImageCreator(
+      {
+        ...options,
+        height: finalCanvasHeight,
+      },
+      mime,
+      res,
+      canvasElement,
+    );
+
+    if (canvasElement) canvasElement.remove();
+
+    return data;
+  }
+  const img = await canvas.to(mime, res as any);
+
+  return {
+    width: CanvasHeight,
+    height: CanvasHeight,
+    data: img,
+  };
 }

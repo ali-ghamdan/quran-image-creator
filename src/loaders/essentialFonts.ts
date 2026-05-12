@@ -1,35 +1,55 @@
-import { GlobalFonts } from "@napi-rs/canvas";
 import type { Layouts } from "../types";
-import path from "node:path";
+import { fontFaceImporter } from "../platforms";
 
-export default function loadEssentialFonts(layout: Layouts) {
-  GlobalFonts.registerFromPath(
-    path.join(__dirname, "../../assets/fonts/Kitab.woff"),
-    "Kitab",
-  );
-  GlobalFonts.registerFromPath(
-    path.join(__dirname, "../../assets/fonts/chapters-frames.ttf"),
-    "chapters-frames",
-  );
+const essentialFonts = [
+  {
+    name: "Kitab",
+    url: "https://raw.githubusercontent.com/ali-ghamdan/quran-data-resources/refs/heads/master/others/fonts/Kitab.woff",
+  },
+  {
+    name: "chapters-frames",
+    url: "https://raw.githubusercontent.com/ali-ghamdan/quran-data-resources/refs/heads/master/others/fonts/chapters-frames.ttf",
+  },
+  {
+    name: "basmalah",
+    url: "https://raw.githubusercontent.com/ali-ghamdan/quran-data-resources/refs/heads/master/others/fonts/basmalah.ttf",
+  },
+  {
+    name: "warsh-chapters-name",
+    url: "https://raw.githubusercontent.com/ali-ghamdan/quran-data-resources/refs/heads/master/others/fonts/chapters-name-warsh.ttf",
+    valid(layout) {
+      return layout === "warsh";
+    },
+  },
+  {
+    name: "madinah-1405-chapters-name",
+    url: "https://raw.githubusercontent.com/ali-ghamdan/quran-data-resources/refs/heads/master/others/fonts/chapters-name-madinah-1405.ttf",
+    valid(layout) {
+      return layout === "madinah-1405";
+    },
+  },
+  {
+    name: "chapters-name",
+    url: "https://raw.githubusercontent.com/ali-ghamdan/quran-data-resources/refs/heads/master/others/fonts/chapters-name.ttf",
+    valid(layout) {
+      return !["madinah-1405", "warsh"].includes(layout);
+    },
+  },
+] as {
+  name: string;
+  url: string;
+  valid?: (layout: Layouts) => boolean;
+}[];
 
-  if (layout === "warsh") {
-    GlobalFonts.registerFromPath(
-      path.join(__dirname, "../../assets/fonts", "chapters-name-warsh.ttf"),
-      "warsh-chapters-name",
-    );
-  } else if (layout === "madinah-1405") {
-    GlobalFonts.registerFromPath(
-      path.join(__dirname, "../../assets/fonts/chapters-name-madinah-1405.ttf"),
-      "madinah-1405-chapters-name",
-    );
-  } else {
-    GlobalFonts.registerFromPath(
-      path.join(__dirname, "../../assets/fonts", "chapters-name.ttf"),
-      "chapters-name",
-    );
+export default async function loadEssentialFonts(
+  layout: Layouts,
+  assetsDirectory: string,
+) {
+  const fontFace = await fontFaceImporter(assetsDirectory);
+  for await (const font of essentialFonts) {
+    if (font.valid && !font.valid(layout)) continue;
+    if (fontFace.isLoaded(font.name)) continue;
+
+    await fontFace.loadFont(font.name, font.url);
   }
-  GlobalFonts.registerFromPath(
-    path.join(__dirname, "../../assets/fonts/basmalah.ttf"),
-    "basmalah",
-  );
 }

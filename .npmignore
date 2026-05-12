@@ -13,5 +13,6 @@ src/**/*.ts
 pnpm-lock.yaml
 
 # samples
-examples
-assets/samples/
+examples/
+samples/
+.cache/

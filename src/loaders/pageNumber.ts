@@ -1,27 +1,29 @@
-import { Image, SKRSContext2D } from "@napi-rs/canvas";
-import { toArabicNumbers } from "../utils";
+import { isNode } from "../constants";
+import { BaseCanvas } from "../platforms/baseImplements";
+import { toArabicNumbers } from "../utils/toArabicNumbers";
 
 export function printPageNumber(
-  ctx: SKRSContext2D,
-  frameImage: Image,
+  canvas: BaseCanvas,
+  frameImage: any,
   pageId: number,
   textColor: string,
   currentHeightPosition: number,
 ) {
-  ctx.save();
-  ctx.textBaseline = "top";
-  ctx.textAlign = "center";
-  ctx.drawImage(
+  canvas.save();
+  canvas.setTextBaseLine("top");
+  canvas.setTextAlign("center");
+  canvas.drawImage(
     frameImage,
-    ctx.canvas.width / 2 - frameImage.width / 2,
+    canvas.width / 2 - frameImage.width / 2,
     currentHeightPosition,
   );
-  ctx.font = "50px Kitab";
-  ctx.fillStyle = textColor;
-  ctx.fillText(
+
+  canvas.setFont("50px Kitab");
+  canvas.setFillStyle(textColor);
+  canvas.fillText(
     toArabicNumbers(pageId),
-    ctx.canvas.width / 2,
-    currentHeightPosition - 5,
+    canvas.width / 2,
+    currentHeightPosition - (isNode ? 5 : -10),
   );
-  ctx.restore();
+  canvas.restore();
 }

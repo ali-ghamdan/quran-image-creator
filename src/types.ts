@@ -1,7 +1,7 @@
 export type VerseSelectionType = {
   chapter: number;
-  from: number;
-  to: number;
+  from?: number;
+  to?: number;
   exegesis?: string;
 };
 export type Word = {
@@ -18,7 +18,6 @@ export type WordSelectionType = {
   from: number;
   to: number;
   words: Word[];
-  totalLines: number;
   exegesis?: string;
 };
 
@@ -35,18 +34,20 @@ export type Layouts =
   | "doori"
   | "shobah";
 
+// TODO: Better Options style
 export type QuranImageCreatorOptions = {
-  selection: VerseSelectionType[];
   readonly height?: number;
+
+  selection: VerseSelectionType[];
   layout?: Layouts;
-  centerVerses?: boolean; // default false
-  ignoreWordsPosition?: boolean; // default false
+  centerVerses?: boolean;
+  ignoreWordsPosition?: boolean;
   loadPageNumber?: {
     pagesEnd?: boolean;
     sectionsEnd?: boolean;
   };
   theme?: {
-    forgroundColor?: string;
+    foregroundColor?: string;
     backgroundColor?: string;
   };
   exegesisFont?: string;
@@ -56,8 +57,13 @@ export type QuranImageCreatorOptions = {
       verseId: number;
     }) => Promise<{ name: string; content: string }>;
   };
-  customVerseFrameBox?: boolean;
-  loadVersesFont?: (pageId: number, layout: Layouts) => Promise<Buffer | void>;
+
+  assetsDirectory?: string;
+
+  loadVersesFont?: (
+    pageId: number,
+    layout: Layouts,
+  ) => Promise<string | Buffer | void>;
 };
 
 export interface linePartType {

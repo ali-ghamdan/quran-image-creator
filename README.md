@@ -1,232 +1,262 @@
 # Quran Image Creator
 
-Generate high-quality images of Quran verses automatically. Supports multiple Madinah Mushaf layouts, recitations, custom themes, page numbers, and exegesis (tafsīr).
+<p align="center">
+  <img src="https://img.shields.io/npm/v/quran-image-creator" alt="npm version">
+  <img src="https://img.shields.io/npm/dm/quran-image-creator" alt="npm downloads">
+  <img src="https://img.shields.io/badge/license-Waqf--2.0-blue" alt="license">
+</p>
 
-## 📸 Samples
+<div align="center"><strong>
+بعون الله وتوفيقه، أقدم لكم مكتبة مشاركة الآيات القرآنية كصورة.
+</strong></div>
 
-These are an examples for the available layouts tested on `Al-Fatihah` Chapter, the code file is under `examples/layouts.js`
+---
 
-|                                                                                                      |                                                                                             |                                                                                             |
-| :--------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------: |
-|     <img width="1604" alt="madinah-1405" src="./assets/samples/madinah-1405.jpeg"> madinah-1405      | <img width="1604" alt="madinah-1422" src="./assets/samples/madinah-1422.jpeg"> madinah-1422 | <img width="1604" alt="madinah-1439" src="./assets/samples/madinah-1439.jpeg"> madinah-1439 |
-| <img width="1604" alt="madinah-tajweed" src="./assets/samples/madinah-tajweed.jpeg"> madinah-tajweed |           <img width="1604" alt="warsh" src="./assets/samples/warsh.jpeg"> warsh            |           <img width="1604" alt="qalon" src="./assets/samples/qalon.jpeg"> qalon            |
-|                <img width="1604" alt="doori" src="./assets/samples/doori.jpeg"> doori                |             <img width="1604" alt="sosi" src="./assets/samples/sosi.jpeg"> sosi             |          <img width="1604" alt="shobah" src="./assets/samples/shobah.jpeg"> shobah          |
+## المحتويات
 
-## ✨ Features
+- [المميزات](#المميزات)
+- [البدء السريع](#البدء-السريع)
+- [المرجع API](#المرجع-api)
+- [معرض الصور](#معرض-الصور)
+- [المساهمة](#المساهمة)
+- [الترخيص](#الترخيص)
 
-- **Multiple Layouts**: Madinah 1405, 1422, 1439, Tajweed, Warsh, Qalon, Sūsi, Dūrī, and Shuʿbah.
-- **Page & Section Numbers**: Optional frame-styled page markers at page and section ending
-- **Exegesis Support**: Attach tafsīr/translations below verses with custom fonts.
-- **Theme Customization**: Light/dark backgrounds, adjustable text & accent colors
-- **Zero External APIs**: Works Mostly offline with bundled SQLite databases.
+---
 
-## 📦 Installation
+## المميزات
+
+| #   | الميزة                                                                               |
+| --- | ------------------------------------------------------------------------------------ |
+| 1   | **6 روايات قرآنية**: حفص عن عاصم (4 مصاحف)، شُعبة، ورش، قالون، الدُّوري، السوسي      |
+| 2   | **تخصيص كامل**: ألوان الخلفية والنص، الخطوط، رقم الصفحة، توسيط الآيات                |
+| 3   | **تفسير الآيات**: إضافة تفسير مع خط مستقل لكل تفسير                                  |
+| 4   | **تحديدات متعددة**: آيات من سور مختلفة في صورة واحدة                                 |
+| 5   | **ويب + Node.js**: يعمل في المتصفح بدون مكاتب إضافية، و `@napi-rs/canvas` لـ Node.js |
+| 6   | **صيغ متعددة**: `png` / `jpeg` / `avif` / `webp` كـ `blob` / `buffer` / `base64`     |
+| 7   | **حجم خفيف**: تحميل البيانات عند التشغيل ثم تخزينها في `.cache` للمعالجات القادمة    |
+| 8   | **دقة المواضع**: طباعة كل كلمة في موضعها كما في المصحف (قابل للإيقاف)                |
+
+### المصاحف المتوفرة
+
+لحفص: المدينة 1405 هـ | 1422 هـ | 1439 هـ | المجود
+
+لباقي الروايات: شُعبة | ورش | قالون | الدُّوري | السوسي
+
+> **تنويه:** المصحف المجود لا يدعم الخلفية الداكنة بعد — استخدم خلفية فاتحة.
+
+### مصادر البيانات
+
+[مجمع الملك فهد](https://qurancomplex.gov.sa/quran-dev/) و [QUL](https://qul.tarteel.ai/).
+
+---
+
+## البدء السريع
+
+### التثبيت
 
 ```bash
 npm install quran-image-creator
-# or
 pnpm add quran-image-creator
-# or
 yarn add quran-image-creator
 ```
 
-## 🚀 Quick Start
+### Node.js
 
 ```js
+const { writeFileSync } = require("fs");
+const QuranImageCreator = require("quran-image-creator");
+
+(async () => {
+  const { data } = await QuranImageCreator(
+    { selection: [{ chapter: 1, from: 1, to: 7 }], layout: "madinah-tajweed" },
+    "image/webp",
+    "buffer",
+  );
+  writeFileSync("output.webp", data);
+})();
+```
+
+### المتصفح
+
+```js
+import QuranImageCreator from "quran-image-creator";
+
+const canvas = document.querySelector("canvas");
+canvas.width = 1024;
+canvas.height = 1024;
+
+const { data } = await QuranImageCreator(
+  { selection: [{ chapter: 1, from: 1, to: 7 }], layout: "madinah-1405" },
+  "image/webp",
+  "base64",
+  canvas,
+);
+
+const img = new Image();
+img.src = data;
+img.onload = () => {
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+};
+```
+
+لمزيد من الأمثلة: `/examples`.
+
+---
+
+## المرجع API
+
+### التوقيع
+
+```ts
+QuranImageCreator(
+  options: QuranImageCreatorOptions,
+  mime: "image/png" | "image/jpeg" | "image/webp" | "image/avif",
+  returnType: "blob" | "buffer" | "base64",
+  canvasEl?: HTMLCanvasElement,
+): Promise<{ width: number; height: number; data: Blob | Buffer | string }>
+```
+
+### الخيارات
+
+`options.selection[]`: مجموعة الآيات المختارة للتصوير. <br />
+`options.selection[].chapter`: رقم السورة. <br />
+`options.selection[].from`, `options.selection.to`: تحديد الآيات (اختياري) <br />
+`options.selection[].exegesis`: رمز التفسير لهذه المجموعة (اختياري).
+`options.layout`: المصحف، اختياري `default: madinah-1439`. <br />
+`options.theme.backgroundColor`: لون الخلفية. (اختياري)<br />
+`options.theme.foregroundColor`: اللون الأساسي (اختياري)<br />
+
+> **تنويه:** لون النصوص يتم تحديدها تلقائيًا بنائًا على لون الخلفية، إما أبيض أو أسود.
+
+`options.loadExegesis`: لتسجيل دوال الحصول على نصوص التفاسير (اختياري) <br />
+`options.exegesisFont`: تخصيص خط التفسير (اختياري). `default: Kitab bold`. <br />
+`options.loadPageNumber.pagesEnd`: هل يتم طبع رقم الصفحة نهاية كل صفحة؟ (اختياري). <br />
+`options.loadPageNumber.sectionsEnd`: هل يتم طبع رقم الصفحة نهاية كل مجموعة تحديد؟ (اختياري). <br />
+`options.centerVerses`: هل يتم وزن الأسطر كلها إلى المنتصف بدلًا من اليمين والشمال؟ (اختياري). <br />
+`options.ignoreWordsPosition`: هل يتم إلغاء ترتيب الكلمات بالترتيب المعروف للمصحف؟ (اختياري) <br />
+`options.assetsDirectory`: مسار مجلد تخزين الخطوط وبيانات المصاحف، لتجنب تحميلها في كل عملية.
+
+> **تنويه:** ليس هناك أي أهميه ل`options.assetsDirectory` في الweb.
+
+### المصاحف
+
+تستطيع اختيار أي قيمة من هذه المصاحف المتوفرة واستخدامها في `options.layout`
+
+| القيمة              | المصحف          |
+| ------------------- | --------------- |
+| `"madinah-1405"`    | المدينة 1405 هـ |
+| `"madinah-1422"`    | المدينة 1422 هـ |
+| `"madinah-1439"`    | المدينة 1439 هـ |
+| `"madinah-tajweed"` | المجود          |
+| `"warsh"`           | ورش             |
+| `"qalon"`           | قالون           |
+| `"shobah"`          | شُعبة           |
+| `"doori"`           | الدُّوري        |
+| `"sosi"`            | السوسي          |
+
+---
+
+## مثال للمكتبة جامع
+
+<div align="left">
+
+```ts
 import fs from "node:fs";
 import QuranImageCreator from "quran-image-creator";
 
-const image = await QuranImageCreator({
-  selection: [{ chapter: 1, from: 1, to: 7 }], // Al-Fatiha
-  layout: "madinah-1439",
-});
+QuranImageCreator(
+  {
+    // default: madinah-1439.
+    layout: "warsh",
+    selection: [
+      { chapter: 1 },
+      { chapter: 2, from: 1, to: 15 },
+      // exegesis: KEY.
+      { chapter: 43, from: 64, to: 64, exegesis: "mukhtasar" },
+    ],
+    loadExegesis: {
+      // will only load for 43:64 verse, for using this function in the selection.
+      // use still can use your own database, online requests will make the operation slower.
+      mukhtasar: async ({ chapterId, verseId }) => {
+        const response = await fetch(
+          `https://tafsir.app/get.php?src=mukhtasar&s=${chapterId}&a=${verseId}&ver=1`,
+        );
+        const { data } = await response.json();
 
-fs.writeFileSync("output.jpeg", image);
-```
-
-## 📖 API Reference
-
-### `QuranImageCreator(options) => Promise<Buffer>`
-
-Returns a JPEG image buffer (`image/jpeg`, quality 100).
-
-#### Options
-
-| Option                | Type                   | Default                                 | Description                                                                     |
-| --------------------- | ---------------------- | --------------------------------------- | ------------------------------------------------------------------------------- |
-| `selection`           | `VerseSelectionType[]` | _required_                              | Array of verse ranges to render                                                 |
-| `layout`              | `Layouts`              | `"madinah-1439"`                        | Mushaf layout or recitation variant                                             |
-| `height`              | `number`               | _auto_                                  | Fixed canvas height. Omit for auto-sizing                                       |
-| `centerVerses`        | `boolean`              | `false`                                 | Center-align verse lines instead of reproducing original page positioning       |
-| `ignoreWordsPosition` | `boolean`              | `false`                                 | Reflow words into lines of equal width instead of using original line breaks    |
-| `customVerseFrameBox` | `boolean`              | `false`                                 | 🔬 Experimental — renders individual verse-number frames _(may misalign words)_ |
-| `theme`               | `Theme`                | _see below_                             | Background & foreground colors                                                  |
-| `loadPageNumber`      | `PageNumberOpts`       | `{ pagesEnd: true, sectionsEnd: true }` | When to print page/section frame numbers                                        |
-| `exegesisFont`        | `string`               | `"Kitab"`                               | Font name for exegesis text                                                     |
-| `loadExegesis`        | `ExegesisLoader`       | _undefined_                             | Async function mapping verse → tafsīr/translation                               |
-| `loadVersesFont`      | `FontLoader`           | _undefined_                             | Custom font resolver (buffer per page/layout)                                   |
-
-**Default theme**: `{ foregroundColor: "#64b469", backgroundColor: "#000000" }`
-
-#### Types
-
-```ts
-export type VerseSelectionType = {
-  chapter: number; // 1–114
-  from: number; // starting verse
-  to: number; // ending verse (inclusive)
-  exegesis?: string; // key used with loadExegesis
-};
-
-export type Layouts =
-  | "madinah-1405"
-  | "madinah-1422"
-  | "madinah-1439"
-  | "madinah-tajweed"
-  | "warsh"
-  | "qalon"
-  | "sosi"
-  | "doori"
-  | "shobah";
-
-export type Theme = {
-  backgroundColor?: string;
-  foregroundColor?: string;
-};
-
-export type PageNumberOpts = {
-  pagesEnd?: boolean; // print at end of Mushaf page
-  sectionsEnd?: boolean; // print at end of the selection
-};
-
-export type ExegesisLoader = {
-  [key: string]: (data: {
-    chapterId: number;
-    verseId: number;
-  }) => Promise<{ name: string; content: string }>;
-};
-
-export type FontLoader = (
-  pageId: number,
-  layout: Layouts,
-) => Promise<Buffer | void>;
-```
-
-## 🛠 Usage Examples
-
-### Multiple Selections
-
-```js
-QuranImageCreator({
-  selection: [
-    { chapter: 1, from: 1, to: 7 },
-    { chapter: 112, from: 1, to: 4 },
-    { chapter: 113, from: 1, to: 5 },
-  ],
-});
-```
-
-Each chapter gets its own header, Basmalah (where applicable), and vertical spacing.
-
-### Dark & Light Themes
-
-```js
-// Dark theme with green accent
-{ theme: { backgroundColor: "#0d0d0d", foregroundColor: "#64b469" } }
-
-// Light theme with dark text
-{ theme: { backgroundColor: "#ffffff", foregroundColor: "#333333" } }
-```
-
-> **Note**: `madinah-tajweed` forces a white background; dark mode is not supported for this layout.
-
-### Page & Section Numbers
-
-```js
-{
-  loadPageNumber: {
-    pagesEnd: true,    // show page number at end of each Mushaf page
-    sectionsEnd: true,  // show at end of the selection
-  }
-}
-```
-
-Set both to `false` to hide numbers entirely.
-
-### Exegesis / Translation
-
-```js
-import { GlobalFonts } from "@napi-rs/canvas";
-
-// if not loaded before.
-GlobalFonts.registerFromPath("path/to/Inter.ttf", "Inter");
-
-QuranImageCreator({
-  selection: [{ chapter: 1, from: 1, to: 7, exegesis: "en-sahih" }],
-  loadExegesis: {
-    "en-sahih": async ({ chapterId, verseId }) => {
-      const res = await fetch(
-        `https://api.alquran.cloud/v1/ayah/${chapterId}:${verseId}/en.sahih`,
-      );
-      const json = await res.json();
-      return {
-        name: "Sahih International",
-        content: json.data.text,
-      };
+        return {
+          name: "المختصر في التفسير",
+          content: data,
+        };
+      },
+    },
+    // custom font for exegesis (default: Kitab bold)
+    // you need to load it in the canvas library
+    // in node.js: use `GlobalFonts` from `@napi-rs/canvas`.
+    // in web: use css font load or using `FontFace` JS API.
+    exegesisFont: "Arial",
+    // default: false.
+    centerVerses: false,
+    // default: false.
+    ignoreWordsPosition: false,
+    // default: $CWD/.cache
+    assetsDirectory: "/home/ali-ghamdan/.cache/quran-image-creator",
+    // 2 color combo source: https://2colors.colorion.co/
+    theme: {
+      // default: #000000
+      backgroundColor: "#D4B996",
+      // default: #64b469
+      foregroundColor: "#A07855",
+    },
+    // these are default options.
+    loadPageNumber: {
+      pagesEnd: true,
+      sectionsEnd: true,
     },
   },
-  exegesisFont: "Inter", // any registered system or loaded font
+  // webp are too lightweight, recommended. (required argument).
+  "image/webp",
+  // buffer is only available in node.js, for web use base64 or blob.
+  // (required argument).
+  "buffer",
+).then(({ data: image }) => {
+  fs.writeFileSync("./image.webp", image);
 });
 ```
 
-Exegesis renders as numbered lines below the verses. The `name` field appears as a heading.
+</div>
 
-### Custom Font Loading
+## معرض الصور
 
-By default, Madinah 1422 & 1405 fonts are fetched from `quranfonts.com`. Provide your own resolver to use local or CDN-hosted fonts:
+| الوصف                                  | الصورة                                           |
+| -------------------------------------- | ------------------------------------------------ |
+| المصحف المجود — سورة الفاتحة           | ![](./samples/simple.webp)                       |
+| تحديدات متفرقة (أذكار النوم) — 1422 هـ | ![](./samples/multi-selection.webp)              |
+| تفسير ابن أبي زمنين — 1422 هـ          | ![](./samples/exegesis.webp)                     |
+| تخصيص 1                                | ![](./samples/custom/1.webp)                     |
+| تخصيص 2                                | ![](./samples/custom/2.webp)                     |
+| تخصيص 3                                | ![](./samples/custom/3.webp)                     |
+| المدينة 1405 هـ                        | ![](./samples/layouts/test-madinah-1405.webp)    |
+| المدينة 1422 هـ                        | ![](./samples/layouts/test-madinah-1422.webp)    |
+| المدينة 1439 هـ                        | ![](./samples/layouts/test-madinah-1439.webp)    |
+| المجود                                 | ![](./samples/layouts/test-madinah-tajweed.webp) |
+| شُعبة                                  | ![](./samples/layouts/test-shobah.webp)          |
+| ورش                                    | ![](./samples/layouts/test-warsh.webp)           |
+| قالون                                  | ![](./samples/layouts/test-qalon.webp)           |
+| الدوري                                 | ![](./samples/layouts/test-doori.webp)           |
+| السوسي                                 | ![](./samples/layouts/test-sosi.webp)            |
 
-```js
-import { readFileSync } from "node:fs";
+---
 
-{
-  loadVersesFont: (pageId, layout) => {
-    const path = `./my-fonts/${layout}/page-${pageId}.woff2`;
-    return readFileSync(path);
-  };
-}
-```
+## المساهمة
 
-If `loadVersesFont` returns `undefined` or `void`, the library falls back to built-in fetching.
+1. افتح [issue](https://github.com/ali-ghamdan/quran-image-creator/issues)
+2. انسخ المستودع (`fork`)
+3. أنشئ فرعًا (`git checkout -b feature/my-feature`)
+4. قدّم طلب سحب (`pull request`)
 
-### Centered Verses
+---
 
-```js
-{
-  centerVerses: true;
-} // centers all lines after the first
-```
+## الترخيص
 
-Useful for social-media cards where you want symmetrical text blocks.
-
-### Custom Frame Boxes (Experimental)
-
-```js
-{
-  customVerseFrameBox: false;
-}
-```
-
-Attempts to wrap each verse number in a decorative frame. Word alignment may be off on certain layouts — use with caution.
-
-> **NOTE: I'd recommend leaving it to its default.**
-
-## ⚠️ Known Limitations
-
-- `madinah-1439-digital` layout is broken, use `madinah-1439` instead.
-- `madinah-tajweed` still light mode support only.
-
-If you counter any issue please help me fix it by creating a [new issue](https://github.com/ali-ghamdan/quran-image-creator/issues) in GitHub.
-
-## 📄 License
-
-License Rights for all Muslims.
+[Waqf General Public License v2.0](https://github.com/ojuba-org/waqf)
