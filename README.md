@@ -122,7 +122,7 @@ QuranImageCreator(
 `options.selection[]`: مجموعة الآيات المختارة للتصوير. <br />
 `options.selection[].chapter`: رقم السورة. <br />
 `options.selection[].from`, `options.selection.to`: تحديد الآيات (اختياري) <br />
-`options.selection[].exegesis`: رمز التفسير لهذه المجموعة (اختياري).
+`options.selection[].exegesis`: رمز التفسير لهذه المجموعة (اختياري). <br />
 `options.layout`: المصحف، اختياري `default: madinah-1439`. <br />
 `options.theme.backgroundColor`: لون الخلفية. (اختياري)<br />
 `options.theme.foregroundColor`: اللون الأساسي (اختياري)<br />
