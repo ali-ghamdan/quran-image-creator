@@ -34,7 +34,7 @@ export default async function QuranImageCreator(
   }
 
   const CanvasHeight = options.height || 1080;
-  const CanvasWidth = 1920;
+  const CanvasWidth = options.width || 1920;
 
   const isDark = isColorDark(options.theme?.backgroundColor!);
   if (layout === "madinah-tajweed" && isDark) {
@@ -72,6 +72,7 @@ export default async function QuranImageCreator(
   ) {
     const finalCanvasHeight = currentHeightPosition - 50;
     let canvasElement: HTMLCanvasElement | undefined;
+
     if (canvasEl) {
       const body = document.querySelector("body");
       if (!body) throw new Error("body element must be exist.");
@@ -88,6 +89,7 @@ export default async function QuranImageCreator(
       {
         ...options,
         height: finalCanvasHeight,
+        width: CanvasWidth,
       },
       mime,
       res,

@@ -7,6 +7,7 @@ export function splitLines(
   layout: Layouts,
   ignoreWordsPosition?: boolean,
 ) {
+  const PADDING = 160;
   const lines: { [key: string]: Array<Word> } = {};
 
   if (ignoreWordsPosition) {
@@ -17,7 +18,7 @@ export function splitLines(
       const printedLineWidth = canvas.measureTextWidth(
         line.map((w) => w.word).join(" "),
       );
-      let allowedWidth = canvas.width - 160;
+      let allowedWidth = canvas.width - PADDING;
       line.push(word);
       if (printedLineWidth >= allowedWidth) {
         lines[currentLine++] = line;

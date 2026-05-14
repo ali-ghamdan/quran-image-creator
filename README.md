@@ -127,7 +127,11 @@ QuranImageCreator(
 `options.theme.backgroundColor`: لون الخلفية. (اختياري)<br />
 `options.theme.foregroundColor`: اللون الأساسي (اختياري)<br />
 
+
 > **تنويه:** لون النصوص يتم تحديدها تلقائيًا بنائًا على لون الخلفية، إما أبيض أو أسود.
+
+`options.width`: تغيير عرض الصورة (اختياري) <br />
+> **تنويه:** يتم تغيير عرض الصورة ليعرض التفاسير بالشكل المناسب.
 
 `options.loadExegesis`: لتسجيل دوال الحصول على نصوص التفاسير (اختياري) <br />
 `options.exegesisFont`: تخصيص خط التفسير (اختياري). `default: Kitab bold`. <br />
@@ -190,6 +194,8 @@ QuranImageCreator(
         };
       },
     },
+    // default value
+    width: 1920,
     // custom font for exegesis (default: Kitab bold)
     // you need to load it in the canvas library
     // in node.js: use `GlobalFonts` from `@napi-rs/canvas`.
@@ -230,16 +236,16 @@ QuranImageCreator(
 
 | الوصف                                  | الصورة                                           |
 | -------------------------------------- | ------------------------------------------------ |
-| المصحف المجود — سورة الفاتحة           | ![](./samples/simple.webp)                       |
 | تحديدات متفرقة (أذكار النوم) — 1422 هـ | ![](./samples/multi-selection.webp)              |
 | تفسير ابن أبي زمنين — 1422 هـ          | ![](./samples/exegesis.webp)                     |
 | تخصيص 1                                | ![](./samples/custom/1.webp)                     |
 | تخصيص 2                                | ![](./samples/custom/2.webp)                     |
 | تخصيص 3                                | ![](./samples/custom/3.webp)                     |
+| تخصيص عرض للصورة           | ![](./samples/custom-width.webp)                       |
 | المدينة 1405 هـ                        | ![](./samples/layouts/test-madinah-1405.webp)    |
 | المدينة 1422 هـ                        | ![](./samples/layouts/test-madinah-1422.webp)    |
 | المدينة 1439 هـ                        | ![](./samples/layouts/test-madinah-1439.webp)    |
-| المجود                                 | ![](./samples/layouts/test-madinah-tajweed.webp) |
+| المصحف المجود                                 | ![](./samples/layouts/test-madinah-tajweed.webp) |
 | شُعبة                                  | ![](./samples/layouts/test-shobah.webp)          |
 | ورش                                    | ![](./samples/layouts/test-warsh.webp)           |
 | قالون                                  | ![](./samples/layouts/test-qalon.webp)           |

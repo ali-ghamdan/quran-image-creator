@@ -36,7 +36,8 @@ export type Layouts =
 
 // TODO: Better Options style
 export type QuranImageCreatorOptions = {
-  readonly height?: number;
+  height?: number;
+  width?: number;
 
   selection: VerseSelectionType[];
   layout?: Layouts;

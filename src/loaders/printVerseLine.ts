@@ -18,11 +18,19 @@ export default async function printVerseLine(
       // manually add Verse Symbol
       .replace(ArabicNumbersRegex, (n) => `۝${n}`);
   }
-  let currentWidthPosition = canvas.width - 80; // right padding
-  const lastWidthPosition = 80; // left padding
+
+  const WIDTH =
+    canvas.width > 1920 && !options.ignoreWordsPosition ? 1920 : canvas.width;
+
+  const PADDING =
+    canvas.width > 1920 && !options.ignoreWordsPosition
+      ? { left: 0, right: 0 }
+      : { left: 80, right: 80 };
+
+  let currentWidthPosition = WIDTH - PADDING.right; // right padding
+  const lastWidthPosition = PADDING.left; // left padding
   let maximumWidth = currentWidthPosition - lastWidthPosition;
   let lineMeasuredWidth = canvas.measureTextWidth(line);
-  let isMovedLine = false;
   // if the line have a few words, it will make it on the left instead of the right.
   if (
     !options.ignoreWordsPosition &&
@@ -32,7 +40,6 @@ export default async function printVerseLine(
     lineMeasuredWidth < maximumWidth * 0.65
   ) {
     currentWidthPosition = lastWidthPosition + lineMeasuredWidth;
-    isMovedLine = true;
   }
   // stretching the line to fit the line
   while (

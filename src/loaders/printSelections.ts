@@ -49,15 +49,15 @@ export default async function printSelections(
     );
     for (let l = 0; l < lines.length; l++) {
       const words = lines[l];
-
-      const pageId = words[0].pageId;
+      if (!words[0]) continue;
+      const { pageId, verseId, wordId, chapterId, lineId } = words[0];
 
       // load "بسم الله الرحمن الرحيم" if was the first verse in the chapter.
       if (
-        words[0].verseId == 1 &&
+        verseId == 1 &&
         // to avoid repeating the process.
-        words[0].wordId == 1 &&
-        !nonBasmalaChapters(layout).includes(words[0].chapterId)
+        wordId == 1 &&
+        !nonBasmalaChapters(layout).includes(chapterId)
       ) {
         printBasmalah(canvas, currentHeightPosition);
         currentHeightPosition += 160;
@@ -70,7 +70,7 @@ export default async function printSelections(
       // print page number.
 
       // end of the page (last line always is 15).
-      const isLastLineInPage = words[0].lineId == (pageId < 3 ? 8 : 15);
+      const isLastLineInPage = lineId == (pageId < 3 ? 8 : 15);
       // print if this is the last of the selection.
       const isLastLineInSection = l === lines.length - 1;
       if (
